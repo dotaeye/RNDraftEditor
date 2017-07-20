@@ -80,7 +80,9 @@ class DraftEditor extends Component {
   onMessage(message) {
     const data = JSON.parse(message);
     // 设置工具栏状态
-    if (data.type === 'SET_TOOLBAR_STATE') {
+    if (
+      ['SET_TOOLBAR_STATE', 'SHOW_TOOLBAR', 'HIDE_TOOLBAR'].includes(data.type)
+    ) {
       this.state.selectionChangeListeners.forEach(listener => {
         listener(data);
       });

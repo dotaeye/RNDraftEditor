@@ -18,6 +18,9 @@ const AppNavigator = StackNavigator(
     },
     DraftEditor: {
       screen: screens.DraftEditor
+    },
+    TestFocus: {
+      screen: screens.TestFocus
     }
   },
   {

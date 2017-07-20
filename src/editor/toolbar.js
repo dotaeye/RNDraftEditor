@@ -59,6 +59,7 @@ export default class Toolbar extends Component {
     super(props);
     this.state = {
       editor: undefined,
+      toggle: false,
       selectedItems: [],
       ds: new ListView.DataSource({
         rowHasChanged: (r1, r2) => r1 !== r2
@@ -78,13 +79,23 @@ export default class Toolbar extends Component {
     }
   }
 
+  toggleToolbar(toggle) {
+    if (toggle != this.state.toggle) {
+      this.setState({ toggle });
+    }
+  }
+
   setSelectionState(selectionState) {
-    const { block, style } = selectionState;
-    const selectedItems = [block, ...style];
-    this.setState({
-      selectedItems,
-      ds: this.state.ds.cloneWithRows(this.getRows(selectedItems))
-    });
+    if (selectionState.type === 'SET_TOOLBAR_STATE') {
+      const { block, style } = selectionState;
+      const selectedItems = [block, ...style];
+      this.setState({
+        selectedItems,
+        ds: this.state.ds.cloneWithRows(this.getRows(selectedItems))
+      });
+    } else {
+      this.toggleToolbar(selectionState.type === 'SHOW_TOOLBAR');
+    }
   }
 
   _removeArrayItem(array, item) {
@@ -159,8 +170,15 @@ export default class Toolbar extends Component {
   }
 
   render() {
+    const { toggle } = this.state;
     return (
-      <View style={[styles.toolbar, this.props.style]}>
+      <View
+        style={[
+          styles.toolbar,
+          this.props.style,
+          !toggle && styles.toolbarHidden
+        ]}
+      >
         <ListView
           horizontal
           contentContainerStyle={{ flexDirection: 'row' }}
@@ -180,6 +198,11 @@ const styles = StyleSheet.create({
     borderTopColor: '#e9e9e9',
     borderTopWidth: 1 / PixelRatio.get()
   },
+  toolbarHidden: {
+    height: 0,
+    borderTopWidth: 0
+  },
+
   defaultSelectedButton: {
     backgroundColor: '#e9e9e9'
   },

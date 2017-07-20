@@ -34291,6 +34291,8 @@
 	      suggestions: _mentions2.default,
 	      readOnly: false
 	    }, _this.onChange = function (editorState) {
+	      var readOnly = _this.state.readOnly;
+
 	      var selection = editorState.getSelection();
 	      var blockType = editorState.getCurrentContent().getBlockForKey(selection.getStartKey()).getType();
 	      var currentStyle = editorState.getCurrentInlineStyle();
@@ -34300,6 +34302,9 @@
 	        type: 'SET_TOOLBAR_STATE'
 	      };
 	      _this.postMessage(message);
+	      _this.postMessage({
+	        type: selection.getHasFocus() ? 'SHOW_TOOLBAR' : 'HIDE_TOOLBAR'
+	      });
 
 	      _this.setState({
 	        editorState: editorState
@@ -34362,25 +34367,6 @@
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      window.onWebViewBridgeMessage = this.onMessage.bind(this);
-	      // window.document.addEventListener("scroll", this.onScroll.bind(this));
-	      // window.document.addEventListener("message", this.onMessage.bind(this));
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      // window.document.removeEventListener("scroll");
-	    }
-	  }, {
-	    key: 'onScroll',
-	    value: function onScroll() {
-	      var offsetY = window.document.body.scrollTop;
-	      var footer = document.getElementById('editor_footer');
-	      var maxOffsetY = footer.offsetTop + footer.offsetHeight - document.documentElement.clientHeight;
-	      console.log('maxOffsetY', maxOffsetY);
-	      if (maxOffsetY < 0) maxOffsetY = 0;
-	      if (offsetY > maxOffsetY) {
-	        window.scrollTo(0, maxOffsetY);
-	      }
 	    }
 	  }, {
 	    key: 'onMessage',
@@ -34397,10 +34383,32 @@
 	        // 初始化
 	      } else if (action.type === 'SET_EDITOR_HEIGHT') {
 	        this.editorHeight = action.editorHeight;
-	        // this.getSelectionYPosition(this.state.editorState, action.editorHeight);
 	      } else if (action.type === 'INSERT_IMAGE') {
 	        this.onAddImage(action.data);
 	      }
+	    }
+	  }, {
+	    key: 'onEditorClick',
+	    value: function onEditorClick(event) {
+	      this.editor.focus();
+	    }
+	  }, {
+	    key: 'getSelectedBlockElement',
+	    value: function getSelectedBlockElement() {
+	      // Finds the block parent of the current selection
+	      // https://github.com/facebook/draft-js/issues/45
+	      var selection = window.getSelection();
+	      if (selection.rangeCount === 0) {
+	        return null;
+	      }
+	      var node = selection.getRangeAt(0).startContainer;
+
+	      do {
+	        if (node.getAttribute && node.getAttribute('data-block') == 'true') {
+	          return node;
+	        }
+	        node = node.parentNode;
+	      } while (node != null);
 	    }
 	  }, {
 	    key: 'syncScrollPosition',
@@ -34408,24 +34416,15 @@
 	      var editorState = this.state.editorState;
 
 	      var selection = editorState.getSelection();
-	      if (!selection.getHasFocus()) {
-	        return;
-	      }
-	      var currentContent = editorState.getCurrentContent();
-	      var currentBlock = currentContent.getBlockForKey(selection.getStartKey());
-	      var offsetKey = _DraftOffsetKey2.default.encode(currentBlock.getKey(), 0, 0);
-	      var selector = '[data-offset-key="' + offsetKey + '"]';
-	      var nodes = document.querySelectorAll(selector);
-
-	      if (nodes && nodes.length > 0) {
-	        var node = document.querySelectorAll(selector)[0];
+	      var node = this.getSelectedBlockElement();
+	      if (node) {
 	        var scrollParent = _Style2.default.getScrollParent(node);
 	        var scrollPosition = (0, _getScrollPosition2.default)(scrollParent);
 	        var nodePosition = (0, _getElementPosition2.default)(node);
 	        var nodeBottom = nodePosition.y + nodePosition.height;
 	        var viewportHeight = document.documentElement.clientHeight;
 	        var scrollDelta = nodeBottom - viewportHeight;
-	        var position = scrollPosition.y + scrollDelta + 10;
+	        var position = scrollPosition.y + scrollDelta + 50;
 	        if (scrollDelta > 0) {
 	          window.scrollTo(0, position);
 	          // console.log("position", position);
@@ -34472,7 +34471,7 @@
 	        { className: _home2.default.RichEditorRoot },
 	        _react2.default.createElement(
 	          'div',
-	          { className: className },
+	          { className: className, onClick: this.onEditorClick.bind(this) },
 	          _react2.default.createElement(_draftJsPluginsEditor2.default, {
 	            blockStyleFn: getBlockStyle,
 	            blockRendererFn: this.mediaBlockRenderer,
@@ -34480,7 +34479,7 @@
 	            onChange: this.onChange,
 	            plugins: plugins,
 	            readOnly: readOnly,
-	            placeholder: 'Tell a story...',
+	            placeholder: '\u5199\u70B9\u4EC0\u4E48...',
 	            ref: function ref(element) {
 	              _this2.editor = element;
 	            }

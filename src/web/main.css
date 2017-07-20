@@ -60,8 +60,9 @@
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  background-color: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  background-color: #eee;
+  margin-bottom: 15px;
+  padding: 5px;
 }
 
 .mediaContent___KaILJuzQ {
@@ -91,8 +92,7 @@
 }
 
 .mediaData___m_dSmFUu {
-  padding: 12px;
-  padding-top: 6px;
+  padding: 6px 12px;
   background-color: #fff;
 }.RichEditorRoot___QPb1XYj5 {
   background: #fff;
@@ -109,6 +109,7 @@
 .RichEditor___31vAYYaM .public-DraftStyleDefault-block {
   line-height: 24px;
   min-height: 24px;
+  margin-bottom: 15px;
 }
 .RichEditor___31vAYYaM .public-DraftStyleDefault-pre {
   background-color: rgba(0, 0, 0, 0.05);

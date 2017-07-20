@@ -17,6 +17,11 @@ class Home extends React.Component {
           title="Draft Editor"
           onPress={() => this.onNavigate('DraftEditor')}
         />
+
+        <Button
+          title="Test Focus"
+          onPress={() => this.onNavigate('TestFocus')}
+        />
       </ScrollView>
     );
   }

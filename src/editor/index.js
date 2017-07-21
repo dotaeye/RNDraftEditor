@@ -154,7 +154,7 @@ class DraftEditor extends Component {
           ref={r => (this.webviewBridge = r)}
           source={{
             html,
-            baseUrl: 'web/'
+            baseUrl: PlatformIOS ? 'web/' : 'file:///android_asset/web/'
           }}
         />
       </View>
